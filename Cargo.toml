@@ -1,0 +1,5 @@
+[package]
+
+name = "winrt"
+version = "0.0.1"
+authors = ["Zvi \"Viz\" Effron <zeffron@cs.hmc.edu>"]
