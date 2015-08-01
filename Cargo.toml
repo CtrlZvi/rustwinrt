@@ -6,3 +6,6 @@ authors = ["Zvi \"Viz\" Effron <zeffron@cs.hmc.edu>"]
 
 links = "vccorlib120"
 build = "build.rs"
+
+[dependencies]
+libc = "0.1.8"
