@@ -22,10 +22,23 @@ mod Platform {
     }
 }
 
-pub fn get_command_arguments(argc : ::libc::c_int) -> (&'static [* const ::libc::wchar_t], usize) {
+pub fn get_command_arguments(argc : ::libc::c_int) -> Vec<String> {
     let mut argc = argc;
     let argv = unsafe { Platform::Details::GetCmdArguments(&mut argc) };
-    ( unsafe { ::std::slice::from_raw_parts(argv, argc as usize) }, argc as usize)
+    let mut arguments : Vec<String> = Vec::with_capacity(argc as usize);
+    /*
+    // How do I make this code work?
+    for arg in unsafe { ::std::slice::from_raw_parts(argv, argc as usize) }.into_iter() {
+        let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(arg, ::libc::wcslen(arg) as usize) };
+        arguments.push(String::from_utf16(unsafe { ::std::mem::transmute(argument) } ).unwrap())
+    }
+    */
+    let args = unsafe { ::std::slice::from_raw_parts(argv, argc as usize) };
+    for i in 0..args.len() {
+        let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(args[i], ::libc::wcslen(args[i]) as usize) };
+        arguments.push(String::from_utf16(unsafe { ::std::mem::transmute(argument) } ).unwrap())
+    }
+    arguments
 }
 
 #[cfg(test)]
@@ -34,12 +47,10 @@ mod tests {
 
     #[test]
     fn test_get_command_arguments() {
-        let (argv, argc) = get_command_arguments(0);
-        assert!(argc == 1);
-        for i in 0..argc {
-            let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(argv[i], ::libc::wcslen(argv[i]) as usize) };
-            // println!("Foo: {}", argument)
-            // assert!(argument[0] == 'C' as u16)
+        let arguments = get_command_arguments(0);
+        assert!(arguments.len() == 1);
+        for argv in arguments {
+            println!("{}", argv)
         }
     }
 }
