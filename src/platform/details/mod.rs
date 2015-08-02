@@ -26,16 +26,8 @@ pub fn get_command_arguments(argc : ::libc::c_int) -> Vec<String> {
     let mut argc = argc;
     let argv = unsafe { Platform::Details::GetCmdArguments(&mut argc) };
     let mut arguments : Vec<String> = Vec::with_capacity(argc as usize);
-    /*
-    // How do I make this code work?
     for arg in unsafe { ::std::slice::from_raw_parts(argv, argc as usize) }.into_iter() {
-        let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(arg, ::libc::wcslen(arg) as usize) };
-        arguments.push(String::from_utf16(unsafe { ::std::mem::transmute(argument) } ).unwrap())
-    }
-    */
-    let args = unsafe { ::std::slice::from_raw_parts(argv, argc as usize) };
-    for i in 0..args.len() {
-        let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(args[i], ::libc::wcslen(args[i]) as usize) };
+        let argument : &[::libc::wchar_t] = unsafe { ::std::slice::from_raw_parts(*arg, ::libc::wcslen(*arg) as usize) };
         arguments.push(String::from_utf16(unsafe { ::std::mem::transmute(argument) } ).unwrap())
     }
     arguments
